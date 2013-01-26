@@ -8,18 +8,20 @@ app.get('/', function (req, res) {
 });
 
 var usernames = {};
-Questions=[{type:2,q="2+2=4",a=1},{type:2,q="3/5>1",a=0},{type:2,q="2-12<4",a=1},{type:2,q="3*27=71",a=0},{type:1,time:5},{type:1,time:4},{type:1,time:4},{type:1,time:1},{type:1,time:2},{type:1,time:6},]
+Questions=[{type:2,q:"2+2=4",a:1},{type:2,q:"3/5>1",a:0},{type:2,q:"2-12<4",a:1},{type:2,q:"3*27=71",a:0},{type:1,time:5},{type:1,time:4},{type:1,time:4},{type:1,time:1},{type:1,time:2},{type:1,time:6},]
 i=0;
+ans=[]
 
-io.sockets.emit('que',Questions[i++]);
+
+    io.sockets.emit('que',Questions[i++]);
 
 io.sockets.on('connection',function(socket){
 
 
-
     socket.on('ans',function(data){
-        console.log('got ans');
-        if(i<Questions.length) setTimeout(function(){io.sockets.emit('que',Questions[i++])},2000);        
+        if(type=2 && wrongAnswer)
+            if(i<Questions.length) setTimeout(function(){io.sockets.emit('que',Questions[i++])},2000);        
+        if(type)
     });
 
         // socket.on('adduser', function(username){

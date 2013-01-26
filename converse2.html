@@ -15,6 +15,7 @@ startQue=function(question){return;}
 $(document).ready(function() {
 	socket.on("que", function(data) {
 		startQue(data);
+		alert(data);
 		$("#convo").append(JSON.stringify(data))
 	});
 	$("#send").click(function() {
@@ -31,7 +32,7 @@ $(document).ready(function() {
 
 	</div>
 	<button id="send">Send</button>
-	<script id="lineTmpl" type="text/template" src="/public/templates/line.tpl"></script>
+	<!--<script id="lineTmpl" type="text/template" src="/public/templates/line.tpl"></script>-->
 	<!--<script type="text/javascript" src="/public/chat.js"></script>-->
 </body>
 </html>
