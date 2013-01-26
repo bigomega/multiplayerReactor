@@ -1,70 +1,45 @@
-var net = require("net");
+var app = require('express').createServer()
+var io = require('socket.io').listen(app);
 
-Array.prototype.remove = function(e) {
-  for (var i = 0; i < this.length; i++) {
-    if (e == this[i]) { return this.splice(i, 1); }
-  }
-};
+app.listen(8080);
 
-function Client(stream) {
-  this.name = null;
-  this.stream = stream;
-}
-
-var clients = [];
-
-var server = net.createServer(function (stream) {
-  var client = new Client(stream);
-  clients.push(client);
-
-  stream.setTimeout(0);
-  stream.setEncoding("utf8");
-
-  stream.addListener("connect", function () {
-    stream.write("Welcome, enter your username:\n");
-  });
-
-  stream.addListener("data", function (data) {
-    if (client.name == null) {
-      client.name = data.match(/\S+/);
-      stream.write("===========\n");
-      clients.forEach(function(c) {
-        if (c != client) {
-          c.stream.write(client.name + " has joined.\n");
-        }
-      });
-      return;
-    }
-
-    var command = data.match(/^\/(.*)/);
-    if (command) {
-      if (command[1] == 'users') {
-        clients.forEach(function(c) {
-          stream.write("- " + c.name + "\n");
-        });
-      }
-      else if (command[1] == 'quit') {
-        stream.end();
-      }
-      return;
-    }
-
-    clients.forEach(function(c) {
-      if (c != client) {
-        c.stream.write(client.name + ": " + data);
-      }
-    });
-  });
-
-  stream.addListener("end", function() {
-    clients.remove(client);
-
-    clients.forEach(function(c) {
-      c.stream.write(client.name + " has left.\n");
-    });
-
-    stream.end();
-  });
+// routing
+app.get('/', function (req, res) {
+  res.sendfile(__dirname + '/index.html');
 });
 
-server.listen(7000);
+// usernames which are currently connected to the chat
+var usernames = {};
+
+io.sockets.on('connection', function (socket) {
+
+  // when the client emits 'sendchat', this listens and executes
+  socket.on('sendchat', function (data) {
+    // we tell the client to execute 'updatechat' with 2 parameters
+    io.sockets.emit('updatechat', socket.username, data);
+  });
+
+  // when the client emits 'adduser', this listens and executes
+  socket.on('adduser', function(username){
+    // we store the username in the socket session for this client
+    socket.username = username;
+    // add the client's username to the global list
+    usernames[username] = username;
+    // echo to client they've connected
+    socket.emit('updatechat', 'SERVER', 'you have connected');
+    // echo globally (all clients) that a person has connected
+    socket.broadcast.emit('updatechat', 'SERVER', username + ' has connected');
+    // update the list of users in chat, client-side
+    io.sockets.emit('updateusers', usernames);
+  });
+
+  // when the user disconnects.. perform this
+  socket.on('disconnect', function(){
+    // remove the username from global usernames list
+    delete usernames[socket.username];
+    // update list of users in chat, client-side
+    io.sockets.emit('updateusers', usernames);
+    // echo globally that this client has left
+    socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+  });
+});
