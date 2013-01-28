@@ -1,9 +1,9 @@
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- 
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet">
-<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script> -->
 
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <!-- <script type="text/javascript" src="chat2.js"></script>
@@ -16,15 +16,25 @@ qno=0
 recqno=0;
 time=0
 score=0
+currTime=0
 
 startQue=function(res){
+
+	currTime=0;
+	timer=setInterval(function(){
+		currTime+=10;
+	},10);
 	score+=res.score||0;
+	$("#scoreVal").html(score);
 
 	$("div.question .no").html(res.que.qno);
-	if(res.que.type==1)
-		$("div.question .que").html("Hit when it becomes White")
+	if(res.que.type==1){
+		$("div.question .que").html("Hit when it becomes White");
+		$("body");
+	}
 	else
 		$("div.question .que").html(res.que.q)
+
 
 }
 
@@ -37,8 +47,10 @@ $(document).ready(function() {
 	});
 
 	$("#send").click(function() {
+		var localTime=currTime;
+		clearInterval(timer);
 		if(recqno!=qno) return;
-		ans={qno:qno++,time:time}; 
+		ans={qno:qno++,time:localTime/1000}; 
 		socket.emit("ans", ans);
 	});
 });
@@ -54,39 +66,51 @@ $(document).ready(function() {
 		position: absolute;
 		top: 0px;
 		left: 0px;
+		z-index: 3;
 	}
 	span.clickme{
 		display: block;
 		text-align: center;
 		position: relative;
-		top: 50%;
+		top: 40%;
 		color: #fff;
 		opacity: 0.2;
 		text-shadow: 0px 0px 50px;
 		font-family: "calibri", Garamond, 'Comic Sans';
-		font-size: 100pt;
+		font-size: 150px;
 		font-weight: bold;
 		z-index: -1;
 	}
 	div.question{
 		position: relative;
-		top:25%;
+		top:50px;
 		font-family: "calibri", Garamond, 'Comic Sans';
 		text-shadow: 0px 0px 20px;
 		color: white;
-		font-size: 70px;
+		font-size: 50px;
 		text-align: center;
+		word-wrap: break-word;
 	}
 	span.que{
-		position: relative;
-		top: 50px;
+		//position: relative;
+		//top: 50px;
+	}
+	div#score{
+		position: fixed;
+		left: 10px;
+		bottom: 10px;
+		font-size: 35px;
+		font-family: "calibri", Garamond, 'Comic Sans';
+		text-shadow: 0px 0px 20px;
+		color: white;
 	}
 </style>
 </head>
 <body>
 
-	<div class="question">Question <span class="no">1</span><br><span class="que">d=454</span></div>
+	<div class="question">Question: <span class="no">1</span><br><span class="que">d=454</span></div>
 	<div id="send"><span class="clickme">Click Me!</span></div>
+	<div id="score">Score: <span id="scoreVal"></span></div>
 	<!--<script id="lineTmpl" type="text/template" src="/public/templates/line.tpl"></script>-->
 	<!--<script type="text/javascript" src="/public/chat.js"></script>-->
 </body>

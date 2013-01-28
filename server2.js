@@ -34,10 +34,11 @@ s=0;
 // })
 
 
-    io.sockets.emit('res',{score:0,que:Questions[i]});
 
 io.sockets.on('connection',function(socket){
     s=socket;
+    io.sockets.emit('res',{score:0,que:Questions[i]});
+
     socket.on('ans',function(data){
         console.log(socket)
         console.log(data)
