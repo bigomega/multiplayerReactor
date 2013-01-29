@@ -71,7 +71,8 @@ $(document).ready(function() {
 			return;
 		}
 		clearInterval(waitingAnim);
-		$("div.question").show();
+		$("div.info").hide(1000);
+		$("div.question").show(500);
 		recqno=data.que.qno;
 		qno=recqno;
 		startQue(data);
