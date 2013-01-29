@@ -96,11 +96,16 @@ s=0;
 //   console.log('addr: '+add);
 // })
 
+playerCount=0;
 
 
 io.sockets.on('connection',function(socket){
     s=socket;
-    io.sockets.emit('res',{score:0,que:Questions[i]});
+    playerCount++;
+    if(playerCount<2)
+        io.sockets.emit('res',{info:"Waiting for another user to Connect"});
+    else
+        io.sockets.emit('res',{score:0,que:Questions[i]});
 
     socket.on('ans',function(data){
         console.log(data)
@@ -139,5 +144,9 @@ io.sockets.on('connection',function(socket){
                 }
             }   
         }
+    });
+
+    socket.on("disconnect",function(){
+        playerCount--;
     });
 });

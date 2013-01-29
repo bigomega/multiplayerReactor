@@ -22,6 +22,7 @@ score=0
 currTime=0
 timeFlag=0;
 timedQue=0;
+waitingAnim=0;
 
 startQue=function(res){
 
@@ -33,7 +34,7 @@ startQue=function(res){
 	score+=res.score||0;
 	$("#scoreVal").html(score);
 
-	$("div.question .no").html(res.que.qno);
+	$("div.question .no").html(res.que.qno+1);
 	if(res.que.type==1){
 		$("div.question .que").html("Hit when it becomes White");
 		timedQue=setTimeout(function(){
@@ -55,18 +56,36 @@ startQue=function(res){
 
 $(document).ready(function() {
 	socket.on("res", function(data) {
-		if(!data.que) return;
+		if(!data.que) {
+			if(data.info){
+				$("div.question").hide();
+				$("div.info .string").html(data.info);
+				waitingAnim=setInterval(function(){
+					var dot=$("div.info .dot");
+					if(dot.html().length>2)
+						dot.html('');
+					else
+						dot.append(".")
+				},500);
+			}
+			return;
+		}
+		clearInterval(waitingAnim);
+		$("div.question").show();
 		recqno=data.que.qno;
+		qno=recqno;
 		startQue(data);
 		console.log(data);
 	});
 
 	$("#send").click(function() {
+		//alert('kkkk')
 		var localTime=currTime;
 		clearInterval(timer);
 		clearTimeout(timedQue);
-		if(recqno!=qno) return;
-		ans={qno:qno++,time:localTime/1000}; 
+		//if(recqno!=qno) return;
+		ans={qno:qno++,time:localTime/1000};
+		console.log(ans); 
 		socket.emit("ans", ans);
 	});
 });
@@ -75,6 +94,7 @@ $(document).ready(function() {
 <style type="text/css">
 	body{
 		background-color: black;
+		cursor: pointer;
 	}
 	div#send{
 		width: 100%;
@@ -98,6 +118,7 @@ $(document).ready(function() {
 		z-index: -1;
 	}
 	div.question{
+		display: none;
 		position: relative;
 		top:50px;
 		font-family: "calibri", Garamond, 'Comic Sans';
@@ -120,11 +141,22 @@ $(document).ready(function() {
 		text-shadow: 0px 0px 20px;
 		color: white;
 	}
+	div.info{
+		position: relative;
+		top:20px;
+		font-family: "calibri", Garamond, 'Comic Sans';
+		text-shadow: 0px 0px 20px;
+		color: white;
+		font-size: 50px;
+		text-align: center;
+		word-wrap: break-word;
+	}
 </style>
 </head>
 <body>
 
-	<div class="question">Question: <span class="no">1</span><br><span class="que">d=454</span></div>
+	<div class="info"><span class="string"></span><span class="dot"></span></div>
+	<div class="question">Question: <span class="no">0</span><br><span class="que">Sample Question</span></div>
 	<div id="send"><span class="clickme">Click Me!</span></div>
 	<div id="score">Score: <span id="scoreVal"></span></div>
 	<!--<script id="lineTmpl" type="text/template" src="/public/templates/line.tpl"></script>-->
