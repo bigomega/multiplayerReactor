@@ -23,16 +23,22 @@ currTime=0
 timeFlag=0;
 timedQue=0;
 waitingAnim=0;
+nextQuestionTimer=0;
+timer=0;
+
+updateScore=function(res){
+	score+=res.score||0;
+	$("#scoreVal").html(score);
+}
 
 startQue=function(res){
+	console.log('it took me some time for me to be activated')
 
 	timeFlag=0;
 	currTime=0;
 	timer=setInterval(function(){
 		currTime+=10;
 	},10);
-	score+=res.score||0;
-	$("#scoreVal").html(score);
 
 	$("div.question .no").html(res.que.qno+1);
 	if(res.que.type==1){
@@ -71,20 +77,52 @@ $(document).ready(function() {
 			return;
 		}
 		clearInterval(waitingAnim);
-		$("div.info").hide(1000);
-		$("div.question").show(500);
 		recqno=data.que.qno;
-		qno=recqno;
-		startQue(data);
+		updateScore(data);
+
+		$("div.info").show(500);
+		$("div.question").hide();
+		if(data.score){//he hit the button
+			if(data.score>0){
+				localTimer=0;
+				$("body").css({backgroundColor:"green"});
+				localTimer=setTimeout(function(){
+						$("body").css({backgroundColor:"black"});
+						clearTimeout(localTimer);
+					},100);
+			}
+			else{
+				localTimer=0;
+				$("body").css({backgroundColor:"red"});
+				localTimer=setTimeout(function(){
+						$("body").css({backgroundColor:"black"});
+						clearTimeout(localTimer);
+					},100);
+			}
+		}
+		else if(data.hitter){
+			playerName=data.hitter.name;
+			playerScore=data.hitter.score;
+			if(playerScore>0) playerScore="<span style='color:green'>+1 Point</span>"
+			else playerScore="<span style='color:red'>-1 Point</span>"
+			$("div.info .string").html(playerName+" hit First. Gets a "+playerScore);
+		}
+
+		nextQuestionTimer=setTimeout(function(){
+			$("div.info").hide(1000);
+			$("div.question").show(500);
+			qno=recqno;
+			startQue(data);
+		},5000);
 		console.log(data);
 	});
 
 	$("#send").click(function() {
 		//alert('kkkk')
+		if(recqno!=qno) return;
 		var localTime=currTime;
 		clearInterval(timer);
 		clearTimeout(timedQue);
-		//if(recqno!=qno) return;
 		ans={qno:qno++,time:localTime/1000};
 		console.log(ans); 
 		socket.emit("ans", ans);
@@ -156,7 +194,7 @@ $(document).ready(function() {
 </head>
 <body>
 
-	<div class="info"><span class="string"></span><span class="dot"></span></div>
+	<div class="info"><span class="string">Connecting</span><span class="dot">...</span></div>
 	<div class="question">Question: <span class="no">0</span><br><span class="que">Sample Question</span></div>
 	<div id="send"><span class="clickme">Click Me!</span></div>
 	<div id="score">Score: <span id="scoreVal"></span></div>

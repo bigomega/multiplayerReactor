@@ -115,34 +115,25 @@ io.sockets.on('connection',function(socket){
                 if(Questions[i].a==0){
                     score=-1;
                     i++;
-                    socket.emit('res',{score:score,que:Questions[i]});
-                    socket.broadcast.emit('res',{score:0,que:Questions[i]});
-                    return;
                 }
                 else if(Questions[i].a==1){
                     score=1;
                     i++;
-                    socket.emit('res',{score:score,que:Questions[i]});
-                    socket.broadcast.emit('res',{score:0,que:Questions[i]}); 
-                    return;
                 }
             }     
             else if(Questions[i].type==1){
                 if(Questions[i].time>=data.time){
                     score=-1;
                     i++;
-                    socket.emit('res',{score:score,que:Questions[i]});
-                    socket.broadcast.emit('res',{score:0,que:Questions[i]});
-                    return;
                 }
                 else{
                     score=1;
-                    i++;
-                    socket.emit('res',{score:score,que:Questions[i]});
-                    socket.broadcast.emit('res',{score:0,que:Questions[i]}); 
-                    return;
+                    i++; 
                 }
-            }   
+            }  
+            socket.emit('res',{score:score,que:Questions[i]});
+            socket.broadcast.emit('res',{score:0,hitter:{name:'px',score:score},que:Questions[i]}); 
+            return;
         }
     });
 
