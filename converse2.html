@@ -62,6 +62,7 @@ startQue=function(res){
 
 $(document).ready(function() {
 	socket.on("res", function(data) {
+		// debugger;
 		if(!data.que) {
 			if(data.info){
 				$("div.question").hide();
@@ -83,6 +84,7 @@ $(document).ready(function() {
 		$("div.info").show(500);
 		$("div.question").hide();
 		if(data.score){//he hit the button
+			$("div.info .string").html("You get a "+data.score+" Point")
 			if(data.score>0){
 				localTimer=0;
 				$("body").css({backgroundColor:"green"});
