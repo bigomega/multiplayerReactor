@@ -7,7 +7,7 @@ NODEJS
 ------
 Dependency
 * socket.io
-* require.js
+* require.js   
 > But the pathing is also mannually done, which is not used in current running version. 
 > Pass the onRequest function to createServer as parameter and require could be removed.
 
