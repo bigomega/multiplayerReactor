@@ -16,7 +16,7 @@
 <script type="text/javascript">
 var socket = io.connect("http://localhost");
 qno=0
-recqno=0;
+recqno=-1;
 time=0
 score=0
 currTime=0
@@ -116,16 +116,17 @@ $(document).ready(function() {
 			qno=recqno;
 			startQue(data);
 		},5000);
-		console.log(data);
+		console.log(data,recqno,qno);
 	});
 
 	$("#send").click(function() {
-		//alert('kkkk')
+		//debugger
+		console.log(recqno,qno)
 		if(recqno!=qno) return;
 		var localTime=currTime;
 		clearInterval(timer);
 		clearTimeout(timedQue);
-		ans={qno:qno++,time:localTime/1000};
+		ans={qno:qno,time:localTime/1000};
 		console.log(ans); 
 		socket.emit("ans", ans);
 	});
