@@ -102,6 +102,7 @@ playerCount=0;
 io.sockets.on('connection',function(socket){
     s=socket;
     playerCount++;
+    socket.username="Player-"+playerCount;
     if(playerCount<2)
         io.sockets.emit('res',{info:"Waiting for another user to Connect"});
     else
@@ -132,7 +133,7 @@ io.sockets.on('connection',function(socket){
                 }
             }  
             socket.emit('res',{score:score,que:Questions[i]});
-            socket.broadcast.emit('res',{score:0,hitter:{name:'px',score:score},que:Questions[i]}); 
+            socket.broadcast.emit('res',{score:0,hitter:{name:socket.username,score:score},que:Questions[i]}); 
             return;
         }
     });

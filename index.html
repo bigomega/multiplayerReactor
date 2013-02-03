@@ -83,9 +83,12 @@ $(document).ready(function() {
 
 		$("div.info").show(500);
 		$("div.question").hide();
+		var playerName = "",
+			playerScore = 0;
 		if(data.score){//he hit the button
-			$("div.info .string").html("You get a "+data.score+" Point")
+			playerName = "You get a ";
 			if(data.score>0){
+				playerScore="<span style='color:green'>+1 Point</span>"
 				localTimer=0;
 				$("body").css({backgroundColor:"green"});
 				localTimer=setTimeout(function(){
@@ -94,6 +97,7 @@ $(document).ready(function() {
 					},100);
 			}
 			else{
+				playerScore="<span style='color:red'>-1 Point</span>"
 				localTimer=0;
 				$("body").css({backgroundColor:"red"});
 				localTimer=setTimeout(function(){
@@ -104,11 +108,12 @@ $(document).ready(function() {
 		}
 		else if(data.hitter){
 			playerName=data.hitter.name;
+			playerName = playerName+" hit First. Gets a ";
 			playerScore=data.hitter.score;
 			if(playerScore>0) playerScore="<span style='color:green'>+1 Point</span>"
 			else playerScore="<span style='color:red'>-1 Point</span>"
-			$("div.info .string").html(playerName+" hit First. Gets a "+playerScore);
 		}
+		$("div.info .string").html(playerName+playerScore);
 
 		nextQuestionTimer=setTimeout(function(){
 			$("div.info").hide(1000);
@@ -192,6 +197,9 @@ $(document).ready(function() {
 		font-size: 50px;
 		text-align: center;
 		word-wrap: break-word;
+	}
+	div.info .string span{
+		text-shadow: 0px 0px 20px;
 	}
 </style>
 </head>
