@@ -140,27 +140,6 @@ describe('Dashboard', function () {
 			'{{/error}}' +
 			'</div>').appendTo('body');
 
-		$('<div id="tile-template" style="display:none">' +
-			'<section class="tile {{semi}} {{static}} {{image}}">' +
-			'<div class="shadow"></div>' +
-			'{{#imageSrc}}' +
-			'<img src="{{imageSrc}}" class="center-img" />	' +
-			'{{/imageSrc}}' +
-			'<div class="data">' +
-			'<div class="value">{{value}}</div>' +
-			'{{#subtitle}}' +
-			'<div class="subtitle">{{subtitle}}</div>' +
-			'{{/subtitle}}' +
-			'<div class="title">{{title}}</div>' +
-			'<input name="filter" type="hidden" value="{{filter}}">' +
-			'</div>' +
-			'{{#future}}' +
-			'<div class="coming-soon-splash">' +
-			'</div>' +
-			'{{/future}}' +
-			'</section>' +
-			'</div>').appendTo('body');
-
 		$('<div id="insight-template" class="hide">' +
 			'{{^no_data}}{{^error}}{{^not_found}}' +
 			'<section class="insight-display">' +
@@ -196,6 +175,7 @@ describe('Dashboard', function () {
 		$('#slide-deck-template').remove();
 		$('#buzz-item-template').remove();
 		$('#news-item-template').remove();
+		$('#insight-template').remove();
 		$('#did-you-know-item-template').remove();
 	});
 
