@@ -7,68 +7,17 @@ var path = require("path");
 
 app.listen(8080);
 
-app.get('/', function (req, res) {
+app.get('/index', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
+app.get('/', function (req, res) {
+  res.sendfile(__dirname + '/main.html');
+});
 
-handle={};
-handle["/"] = Gstart;
-handle["/js"] = js;
-handle["/css"] = css;
-function onRequest(request, response) {
-        var pathname  = url.parse(request.url).pathname;
-        var getData = "";
-
-        console.log("Request received for " + pathname);
-        
-        if(url.parse(request.url).query != null)
-            {
-                getData = url.parse(request.url).query;
-                console.log(getData);
-            }
-        
-            request.setEncoding("utf-8");
-            route(handle, pathname, response, getData);
-    }
-
-function route(handle, pathname, response, getData) {
-    console.log("About to route a request for " + pathname);
-    if(typeof(handle[pathname]) === "function")
-        handle[pathname](response, getData);
-    else if(pathname.indexOf(".js")!=-1)
-        handle['/js'](response, pathname);
-    else if(pathname.indexOf(".css")!=-1)
-        handle['/css'](response, pathname);
-    else if(pathname.indexOf(".tpl")!=-1)
-        handle['/tpl'](response, pathname);
-    else { 
-        console.log("No request handler found for " + pathname);
-        response.writeHead(404, {"Content-Type": "text/plain"});
-        response.write("404\nPage Not Found");
-        response.end();
-    }
-}
-
-function js(response, fileName) {    
-    response.writeHead(200, {"Content-Type": "text/javascript"});
-    fileName = "." + fileName;
-    response.write(fs.readFileSync(fileName));
-    response.end();
-}
-
-function css(response, fileName) {
-    response.writeHead(200, {"Content-Type": "text/css"});
-    fileName = "." + fileName;
-    response.write(fs.readFileSync(fileName));
-    response.end();
-}
-
-function Gstart(response, fileName){
-    console.log("start")
-    response.writeHead(200, {"Content-Type": "text/html"});
-    response.write(fs.readFileSync("./converse2.html"));
-}
+app.get('/public/jquery-1.8.2.min.js', function (req, res) {
+  res.sendfile(__dirname + '/public/jquery-1.8.2.min.js');
+});
 
 var usernames = [];
 Questions=[{type:2,q:"2+2=4",a:1,qno:0},
@@ -142,3 +91,62 @@ io.sockets.on('connection',function(socket){
         playerCount--;
     });
 });
+
+//generic routng - not used due to its complexity
+handle={};
+handle["/"] = Gstart;
+handle["/js"] = js;
+handle["/css"] = css;
+function onRequest(request, response) {
+        var pathname  = url.parse(request.url).pathname;
+        var getData = "";
+
+        console.log("Request received for " + pathname);
+        
+        if(url.parse(request.url).query != null)
+            {
+                getData = url.parse(request.url).query;
+                console.log(getData);
+            }
+        
+            request.setEncoding("utf-8");
+            route(handle, pathname, response, getData);
+    }
+
+function route(handle, pathname, response, getData) {
+    console.log("About to route a request for " + pathname);
+    if(typeof(handle[pathname]) === "function")
+        handle[pathname](response, getData);
+    else if(pathname.indexOf(".js")!=-1)
+        handle['/js'](response, pathname);
+    else if(pathname.indexOf(".css")!=-1)
+        handle['/css'](response, pathname);
+    else if(pathname.indexOf(".tpl")!=-1)
+        handle['/tpl'](response, pathname);
+    else { 
+        console.log("No request handler found for " + pathname);
+        response.writeHead(404, {"Content-Type": "text/plain"});
+        response.write("404\nPage Not Found");
+        response.end();
+    }
+}
+
+function js(response, fileName) {    
+    response.writeHead(200, {"Content-Type": "text/javascript"});
+    fileName = "." + fileName;
+    response.write(fs.readFileSync(fileName));
+    response.end();
+}
+
+function css(response, fileName) {
+    response.writeHead(200, {"Content-Type": "text/css"});
+    fileName = "." + fileName;
+    response.write(fs.readFileSync(fileName));
+    response.end();
+}
+
+function Gstart(response, fileName){
+    console.log("start")
+    response.writeHead(200, {"Content-Type": "text/html"});
+    response.write(fs.readFileSync("./converse2.html"));
+}
